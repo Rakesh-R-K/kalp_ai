@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-page-bg text-white antialiased m-0 p-0 font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-wider;
+  }
+}
+
+.glass-panel {
+  @apply bg-card-bg/60 backdrop-blur-xl border border-neon-blue/20 rounded-xl relative overflow-hidden;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.05);
+}
+
+.glass-panel::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none;
+}
+
+.neon-text {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.neon-border {
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-page-bg;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neon-blue/40 border border-neon-blue/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neon-blue;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+}
+
+/* Global Cursor Override */
+* {
+  cursor: none !important;
+}
+
+/* Glitch Animation */
+@keyframes glitch {
+  0% {
+    clip-path: inset(20% 0 80% 0);
+    transform: translate(-2px, 2px);
+  }
+
+  20% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(2px, -2px);
+  }
+
+  40% {
+    clip-path: inset(40% 0 50% 0);
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(-2px, 2px);
+  }
+
+  100% {
+    clip-path: inset(30% 0 50% 0);
+    transform: translate(2px, -2px);
+  }
+}
+
+.glitch-hover:hover {
+  position: relative;
+}
+
+.glitch-hover:hover::before {
+  content: attr(data-text);
+  position: absolute;
+  left: -2px;
+  text-shadow: 2px 0 #00F0FF;
+  top: 0;
+  color: white;
+  background: black;
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+  animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+  z-index: 10;
+}
+
+.glitch-hover:hover::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 2px;
+  text-shadow: -2px 0 #B026FF;
+  top: 0;
+  color: white;
+  background: black;
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+  animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+  animation-delay: 0.1s;
+  z-index: 10;
+}
