@@ -125,7 +125,7 @@ export default function Home() {
             <CyberBackground />
 
             {/* Hero Intro */}
-            <section className="min-h-[calc(100vh-72px)] flex flex-col items-center justify-center relative text-center px-4 overflow-hidden">
+            <section className="min-h-[calc(100vh-72px)] flex flex-col items-center justify-center relative text-center px-4">
 
                 {/* Background Glitch Rings */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-neon-blue/10 rounded-full border-dashed animate-[spin_20s_linear_infinite] pointer-events-none" />

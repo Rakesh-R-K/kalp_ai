@@ -5,10 +5,19 @@ import CyberBackground from "../components/CyberBackground";
 
 export default function Reasoning() {
     const [greetMsg, setGreetMsg] = useState("");
-    const [name, setName] = useState("");
+
+    const [loading, setLoading] = useState(false);
 
     async function testLink() {
-        setGreetMsg(await invoke("greet", { name }));
+        setLoading(true);
+        setGreetMsg("");
+        try {
+            const result = await invoke("reason_next_steps");
+            setGreetMsg(JSON.stringify(result, null, 2));
+        } catch (error) {
+            setGreetMsg(`ERROR: ${error}`);
+        }
+        setLoading(false);
     }
 
     return (
@@ -36,34 +45,26 @@ export default function Reasoning() {
 
                 <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
                     <span className="w-2 h-2 bg-yellow-400 rounded-full mr-3 animate-pulse"></span>
-                    SLM Prompt Test
+                    Cognitive Generation
                 </h3>
 
-                <form
-                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full"
-                    onSubmit={(e) => { e.preventDefault(); testLink(); }}
-                >
-                    <input
-                        onChange={(e) => setName(e.currentTarget.value)}
-                        placeholder="ENTER CONTEXT FRAGMENT..."
-                        className="flex-1 bg-black/50 border border-yellow-400/30 rounded-none px-4 py-3 text-sm text-yellow-400 font-mono uppercase focus:outline-none focus:border-yellow-400 focus:shadow-[0_0_15px_rgba(250,204,21,0.3)] transition-all placeholder:text-yellow-400/30"
-                    />
+                <div className="flex w-full">
                     <button
-                        type="submit"
-                        className="bg-yellow-400/10 text-yellow-400 border border-yellow-400 px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-yellow-400 hover:text-black hover:shadow-[0_0_20px_rgba(250,204,21,0.6)]"
+                        onClick={testLink}
+                        disabled={loading}
+                        className={`w-full bg-yellow-400/10 ${loading ? 'opacity-50 cursor-not-allowed' : ''} text-yellow-400 border border-yellow-400 px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-yellow-400 hover:text-black hover:shadow-[0_0_20px_rgba(250,204,21,0.6)]`}
                     >
-                        INFER
+                        {loading ? 'REASONING...' : 'TRIGGER SLM INFERENCE'}
                     </button>
-                </form>
+                </div>
 
                 {greetMsg && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-8 w-full p-4 bg-yellow-400/10 border-l-2 border-yellow-400 text-yellow-400 text-sm font-mono flex items-start"
+                        className="mt-8 w-full p-4 bg-yellow-400/10 border-l-2 border-yellow-400 text-yellow-400 text-xs font-mono flex items-start overflow-auto max-h-[300px]"
                     >
-                        <span className="opacity-50 mr-3 text-yellow-400/50">{'>'}</span>
-                        <span className="uppercase tracking-wide">{greetMsg}</span>
+                        <pre className="whitespace-pre-wrap">{greetMsg}</pre>
                     </motion.div>
                 )}
             </motion.div>

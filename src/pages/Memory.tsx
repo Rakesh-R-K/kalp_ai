@@ -5,10 +5,14 @@ import CyberBackground from "../components/CyberBackground";
 
 export default function Memory() {
     const [greetMsg, setGreetMsg] = useState("");
-    const [name, setName] = useState("");
 
     async function testLink() {
-        setGreetMsg(await invoke("greet", { name }));
+        try {
+            const result = await invoke("get_memory_context");
+            setGreetMsg(JSON.stringify(result, null, 2));
+        } catch (error) {
+            setGreetMsg(`ERROR: ${error}`);
+        }
     }
 
     return (
@@ -36,34 +40,25 @@ export default function Memory() {
 
                 <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
                     <span className="w-2 h-2 bg-neon-purple rounded-full mr-3 animate-pulse"></span>
-                    Graph Node Link Test
+                    Memory Synchronization
                 </h3>
 
-                <form
-                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full"
-                    onSubmit={(e) => { e.preventDefault(); testLink(); }}
-                >
-                    <input
-                        onChange={(e) => setName(e.currentTarget.value)}
-                        placeholder="INJECT TEST NODE..."
-                        className="flex-1 bg-black/50 border border-neon-purple/30 rounded-none px-4 py-3 text-sm text-neon-purple font-mono uppercase focus:outline-none focus:border-neon-purple focus:shadow-[0_0_15px_rgba(176,38,255,0.3)] transition-all placeholder:text-neon-purple/30"
-                    />
+                <div className="flex w-full">
                     <button
-                        type="submit"
-                        className="bg-neon-purple/10 text-neon-purple border border-neon-purple px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-neon-purple hover:text-white hover:shadow-[0_0_20px_rgba(176,38,255,0.6)]"
+                        onClick={testLink}
+                        className="w-full bg-neon-purple/10 text-neon-purple border border-neon-purple px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-neon-purple hover:text-white hover:shadow-[0_0_20px_rgba(176,38,255,0.6)]"
                     >
-                        INJECT
+                        FETCH CONTEXT (SOSM)
                     </button>
-                </form>
+                </div>
 
                 {greetMsg && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-8 w-full p-4 bg-neon-purple/10 border-l-2 border-neon-purple text-neon-purple text-sm font-mono flex items-start"
+                        className="mt-8 w-full p-4 bg-neon-purple/10 border-l-2 border-neon-purple text-neon-purple text-xs font-mono flex items-start overflow-auto max-h-[300px]"
                     >
-                        <span className="opacity-50 mr-3 text-neon-purple/50">{'>'}</span>
-                        <span className="uppercase tracking-wide">{greetMsg}</span>
+                        <pre className="whitespace-pre-wrap">{greetMsg}</pre>
                     </motion.div>
                 )}
             </motion.div>

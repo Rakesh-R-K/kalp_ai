@@ -8,7 +8,12 @@ export default function Capture() {
     const [name, setName] = useState("");
 
     async function testLink() {
-        setGreetMsg(await invoke("greet", { name }));
+        try {
+            const result = await invoke("process_nmap_file", { filePath: name });
+            setGreetMsg(result as string);
+        } catch (error) {
+            setGreetMsg(`ERROR: ${error}`);
+        }
     }
 
     return (
@@ -36,7 +41,7 @@ export default function Capture() {
 
                 <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
                     <span className="w-2 h-2 bg-neon-blue rounded-full mr-3 animate-pulse"></span>
-                    Interface Link Test
+                    Parse Nmap XML
                 </h3>
 
                 <form
@@ -45,14 +50,14 @@ export default function Capture() {
                 >
                     <input
                         onChange={(e) => setName(e.currentTarget.value)}
-                        placeholder="ENTER PAYLOAD STRING..."
+                        placeholder="ENTER ABSOLUTE NMAP XML PATH..."
                         className="flex-1 bg-black/50 border border-neon-blue/30 rounded-none px-4 py-3 text-sm text-neon-blue font-mono uppercase focus:outline-none focus:border-neon-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder:text-neon-blue/30"
                     />
                     <button
                         type="submit"
                         className="bg-neon-blue/10 text-neon-blue border border-neon-blue px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-neon-blue hover:text-black hover:shadow-[0_0_20px_rgba(0,240,255,0.6)]"
                     >
-                        TRANSMIT
+                        PROCESS
                     </button>
                 </form>
 
@@ -63,7 +68,7 @@ export default function Capture() {
                         className="mt-8 w-full p-4 bg-green-900/20 border-l-2 border-green-500 text-green-400 text-sm font-mono flex items-start"
                     >
                         <span className="opacity-50 mr-3 text-green-500/50">{'>'}</span>
-                        <span className="uppercase tracking-wide">{greetMsg}</span>
+                        <span className="uppercase tracking-wide break-all">{greetMsg}</span>
                     </motion.div>
                 )}
             </motion.div>
