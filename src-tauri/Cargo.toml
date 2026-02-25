@@ -27,3 +27,4 @@ quick-xml = { version = "0.31", features = ["serialize"] }
 surrealdb = { version = "2.2.0", features = ["kv-mem"] }
 ort = "2.0.0-rc.9"
 uuid = { version = "1.21.0", features = ["v4"] }
+chrono = "0.4.44"

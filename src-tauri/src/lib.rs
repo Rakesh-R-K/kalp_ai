@@ -32,18 +32,52 @@ async fn process_nmap_file(file_path: String, state: State<'_, AppState>) -> Res
 }
 
 #[tauri::command]
+async fn process_gobuster_file(file_path: String, state: State<'_, AppState>) -> Result<String, String> {
+    let sosm = capture::gobuster_parser::parse_gobuster_file(&file_path)
+        .map_err(|e| format!("Failed to parse {}: {}", file_path, e))?;
+    
+    let db = state.memory_store.lock().await;
+    for endpoint in &sosm.endpoints {
+        db.insert_endpoint(endpoint).await.map_err(|e| format!("DB Error: {}", e))?;
+    }
+    for obs in &sosm.observations {
+        db.insert_observation(obs).await.map_err(|e| format!("DB Error: {}", e))?;
+    }
+    
+    Ok(format!("Parsed Gobuster output. Saved {} endpoints and {} observations.", sosm.endpoints.len(), sosm.observations.len()))
+}
+
+#[tauri::command]
+async fn process_nikto_file(file_path: String, state: State<'_, AppState>) -> Result<String, String> {
+    let sosm = capture::nikto_parser::parse_nikto_json(&file_path)
+        .map_err(|e| format!("Failed to parse {}: {}", file_path, e))?;
+    
+    let db = state.memory_store.lock().await;
+    for vuln in &sosm.vulnerabilities {
+        db.insert_vulnerability(vuln).await.map_err(|e| format!("DB Error: {}", e))?;
+    }
+    for obs in &sosm.observations {
+        db.insert_observation(obs).await.map_err(|e| format!("DB Error: {}", e))?;
+    }
+    
+    Ok(format!("Parsed Nikto output. Saved {} vulnerabilities and {} observations.", sosm.vulnerabilities.len(), sosm.observations.len()))
+}
+
+#[tauri::command]
 async fn get_memory_context(state: State<'_, AppState>) -> Result<normalization::sosm::SOSM, String> {
     let db = state.memory_store.lock().await;
     let hosts = db.get_hosts().await.unwrap_or_default();
     let observations = db.get_observations().await.unwrap_or_default();
     let hypotheses = db.get_hypotheses().await.unwrap_or_default();
+    let endpoints = db.get_endpoints().await.unwrap_or_default();
+    let vulnerabilities = db.get_vulnerabilities().await.unwrap_or_default();
     
     Ok(normalization::sosm::SOSM {
         hosts,
         services: vec![],
-        endpoints: vec![],
+        endpoints,
         observations,
-        vulnerabilities: vec![],
+        vulnerabilities,
         hypotheses,
     })
 }
@@ -86,6 +120,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             process_nmap_file,
+            process_gobuster_file,
+            process_nikto_file,
             get_memory_context,
             reason_next_steps
         ])
