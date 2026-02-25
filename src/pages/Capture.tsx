@@ -5,11 +5,31 @@ import CyberBackground from "../components/CyberBackground";
 
 export default function Capture() {
     const [greetMsg, setGreetMsg] = useState("");
-    const [name, setName] = useState("");
+    const [nmapPath, setNmapPath] = useState("");
+    const [gobusterPath, setGobusterPath] = useState("");
+    const [niktoPath, setNiktoPath] = useState("");
 
-    async function testLink() {
+    async function processNmap() {
         try {
-            const result = await invoke("process_nmap_file", { filePath: name });
+            const result = await invoke("process_nmap_file", { filePath: nmapPath });
+            setGreetMsg(result as string);
+        } catch (error) {
+            setGreetMsg(`ERROR: ${error}`);
+        }
+    }
+
+    async function processGobuster() {
+        try {
+            const result = await invoke("process_gobuster_file", { filePath: gobusterPath });
+            setGreetMsg(result as string);
+        } catch (error) {
+            setGreetMsg(`ERROR: ${error}`);
+        }
+    }
+
+    async function processNikto() {
+        try {
+            const result = await invoke("process_nikto_file", { filePath: niktoPath });
             setGreetMsg(result as string);
         } catch (error) {
             setGreetMsg(`ERROR: ${error}`);
@@ -17,7 +37,7 @@ export default function Capture() {
     }
 
     return (
-        <div className="relative w-full min-h-[calc(100vh-72px)] text-white font-sans flex flex-col items-center justify-center p-6">
+        <div className="relative w-full min-h-[calc(100vh-72px)] text-white font-sans flex flex-col items-center justify-center p-6 mb-12">
             <CyberBackground />
 
             <motion.div
@@ -35,22 +55,66 @@ export default function Capture() {
                     <h2 className="text-3xl font-display font-bold text-white tracking-widest uppercase neon-text">Telemetry Capture</h2>
                 </div>
 
-                <p className="text-cyber-gray font-mono text-sm leading-relaxed mb-10 pb-8 border-b border-white/10">
+                <p className="text-cyber-gray font-mono text-sm leading-relaxed mb-6 pb-6 border-b border-white/10">
                     Module active. Listening for structured Nmap/Nikto/Gobuster outputs. Raw strings will be rejected. Only normalized entities (SOSM) will pass to the Context Matrix.
                 </p>
 
+                {/* NMAP FORM */}
                 <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
                     <span className="w-2 h-2 bg-neon-blue rounded-full mr-3 animate-pulse"></span>
                     Parse Nmap XML
                 </h3>
-
                 <form
-                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full"
-                    onSubmit={(e) => { e.preventDefault(); testLink(); }}
+                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full mb-8"
+                    onSubmit={(e) => { e.preventDefault(); processNmap(); }}
                 >
                     <input
-                        onChange={(e) => setName(e.currentTarget.value)}
+                        onChange={(e) => setNmapPath(e.currentTarget.value)}
                         placeholder="ENTER ABSOLUTE NMAP XML PATH..."
+                        className="flex-1 bg-black/50 border border-neon-blue/30 rounded-none px-4 py-3 text-sm text-neon-blue font-mono uppercase focus:outline-none focus:border-neon-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder:text-neon-blue/30"
+                    />
+                    <button
+                        type="submit"
+                        className="bg-neon-blue/10 text-neon-blue border border-neon-blue px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-neon-blue hover:text-black hover:shadow-[0_0_20px_rgba(0,240,255,0.6)]"
+                    >
+                        PROCESS
+                    </button>
+                </form>
+
+                {/* GOBUSTER FORM */}
+                <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
+                    <span className="w-2 h-2 bg-neon-blue rounded-full mr-3 animate-pulse"></span>
+                    Parse Gobuster Text/JSON
+                </h3>
+                <form
+                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full mb-8"
+                    onSubmit={(e) => { e.preventDefault(); processGobuster(); }}
+                >
+                    <input
+                        onChange={(e) => setGobusterPath(e.currentTarget.value)}
+                        placeholder="ENTER ABSOLUTE GOBUSTER PATH..."
+                        className="flex-1 bg-black/50 border border-neon-blue/30 rounded-none px-4 py-3 text-sm text-neon-blue font-mono uppercase focus:outline-none focus:border-neon-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder:text-neon-blue/30"
+                    />
+                    <button
+                        type="submit"
+                        className="bg-neon-blue/10 text-neon-blue border border-neon-blue px-8 py-3 text-sm font-mono font-bold tracking-widest uppercase transition-all hover:bg-neon-blue hover:text-black hover:shadow-[0_0_20px_rgba(0,240,255,0.6)]"
+                    >
+                        PROCESS
+                    </button>
+                </form>
+
+                {/* NIKTO FORM */}
+                <h3 className="text-lg font-mono text-white mb-4 uppercase tracking-widest flex items-center">
+                    <span className="w-2 h-2 bg-neon-blue rounded-full mr-3 animate-pulse"></span>
+                    Parse Nikto JSON
+                </h3>
+                <form
+                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full"
+                    onSubmit={(e) => { e.preventDefault(); processNikto(); }}
+                >
+                    <input
+                        onChange={(e) => setNiktoPath(e.currentTarget.value)}
+                        placeholder="ENTER ABSOLUTE NIKTO JSON PATH..."
                         className="flex-1 bg-black/50 border border-neon-blue/30 rounded-none px-4 py-3 text-sm text-neon-blue font-mono uppercase focus:outline-none focus:border-neon-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder:text-neon-blue/30"
                     />
                     <button
