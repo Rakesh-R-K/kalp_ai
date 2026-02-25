@@ -3,7 +3,7 @@ use surrealdb::Surreal;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::normalization::sosm::{Host, Observation, Hypothesis};
+use crate::normalization::sosm::{Host, Observation, Hypothesis, Endpoint, Vulnerability};
 
 pub struct SurrealMemoryStore {
     db: Surreal<Db>,
@@ -51,6 +51,30 @@ impl SurrealMemoryStore {
     pub async fn get_hypotheses(&self) -> Result<Vec<Hypothesis>, surrealdb::Error> {
         let hypos: Vec<Hypothesis> = self.db.select("hypothesis").await?;
         Ok(hypos)
+    }
+
+    /// Insert an Endpoint
+    pub async fn insert_endpoint(&self, endpoint: &Endpoint) -> Result<(), surrealdb::Error> {
+        let _: Option<Endpoint> = self.db.create("endpoint").content(endpoint.clone()).await?;
+        Ok(())
+    }
+
+    /// Retrieve all Endpoints
+    pub async fn get_endpoints(&self) -> Result<Vec<Endpoint>, surrealdb::Error> {
+        let endpoints: Vec<Endpoint> = self.db.select("endpoint").await?;
+        Ok(endpoints)
+    }
+
+    /// Insert a Vulnerability
+    pub async fn insert_vulnerability(&self, vuln: &Vulnerability) -> Result<(), surrealdb::Error> {
+        let _: Option<Vulnerability> = self.db.create(("vulnerability", vuln.id.clone())).content(vuln.clone()).await?;
+        Ok(())
+    }
+
+    /// Retrieve all Vulnerabilities
+    pub async fn get_vulnerabilities(&self) -> Result<Vec<Vulnerability>, surrealdb::Error> {
+        let vulns: Vec<Vulnerability> = self.db.select("vulnerability").await?;
+        Ok(vulns)
     }
 }
 
